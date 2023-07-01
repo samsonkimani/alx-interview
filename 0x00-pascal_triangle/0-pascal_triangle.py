@@ -5,6 +5,8 @@ A function to create the pascals triangle
 @n: an integer
 @return: returns the pascals triangle
 """
+
+
 def pascal_triangle(n):
     """returns a list of lists of numbers
     representing the pascal triangle"""
