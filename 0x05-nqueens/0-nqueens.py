@@ -1,71 +1,64 @@
 #!/usr/bin/python3
+"""Backtracking algo solution for NQueens problem"""
 
-"""
-n queens problem
-"""
 import sys
 
 
-def is_safe(board, row, col):
-    """determining if it is safe to add a queen """
-    for i in range(row):
-        if board[i][col] == 1:
-            return False
+class Nqueens:
+    """A class containing the solution to the Nqueen problem"""
+    def SolveNqueens(self, n):
+        """Contains the solution method and all the core data and
+        algorithms"""
+        column = []
+        positiveDiagonal = set()  # row + column is constant
+        negativeDiagonal = set()  # row - column is constant
+        row = []
 
-    """ checking the upper left diagonal"""
-    i, j = row, col
-    while i >= 0 and j >= 0:
-        if board[i][j] == 1:
-            return False
-        i -= 1
-        j -= 1
+        res = []
 
-    """ checking the upper right diagonal"""
-    i, j = row, col
-    while i >= 0 and j < len(board):
-        if board[i][j] == 1:
-            return False
-        i -= 1
-        j += 1
+        def is_valid(r, c):
+            """Checks if the current position is valid to place a queen"""
+            return c not in column and (r + c) not in positiveDiagonal \
+                and (r - c) not in negativeDiagonal
 
-    return True
+        def backtrack(r):
+            """The backtracking algo that checks if
+            the queen is already on that given row and
+            positiveDiagonal or negativeDiagonal then
+            discarding that position recursively"""
+            if r == n:
+                res.append([[row[i], column[i]] for i in range(n)])
+                return
 
+            for c in range(n):
+                if is_valid(r, c):
+                    column.append(c)
+                    row.append(r)
+                    positiveDiagonal.add(r + c)
+                    negativeDiagonal.add(r - c)
 
-def nqueens(board, row, n):
-    """ solving for the nqueens using back tracing"""
-    if row == n:
-        for i in range(n):
-            for j in range(n):
-                if board[i][j] == 1:
-                    print(f'[{i}, {j}]', end=' ')
-        print()
-        return
+                    backtrack(r + 1)
 
-    for col in range(n):
-        if is_safe(board, row, col):
-            board[row][col] = 1
-            nqueens(board, row + 1, n)
-            board[row][col] = 0
+                    column.pop()
+                    row.pop()
+                    positiveDiagonal.remove(r + c)
+                    negativeDiagonal.remove(r - c)
 
+        backtrack(0)
 
-def solve_nqueens(n):
-    """ the entry function """
-    if not n.isnumeric():
-        print("N must be a number")
-        sys.exit(1)
-
-    n = int(n)
-    if n < 4:
-        print("N must be at least 4")
-        sys.exit(1)
-
-    board = [[0 for _ in range(n)] for _ in range(n)]
-    nqueens(board, 0, n)
+        for solution in res:
+            print(solution)
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
         sys.exit(1)
-
-    solve_nqueens(sys.argv[1])
+    solution = Nqueens()
+    if not sys.argv[1].isnumeric():
+        print("N must be a number")
+        sys.exit(1)
+    if int(sys.argv[1]) < 4:
+        print("N must be at least 4")
+        sys.exit(1)
+    solution.SolveNqueens(int(sys.argv[1]))
