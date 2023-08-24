@@ -1,39 +1,25 @@
 #!/usr/bin/node
-
 const request = require('request');
+const API_URL = 'https://swapi-api.hbtn.io/api';
 
-function getMovieCharacters (movieId) {
-  const baseUrl = 'https://swapi.dev/api/';
-
-  request(`${baseUrl}films/${movieId}/`, (error, response, filmBody) => {
-    if (error) {
-      console.error('Error:', error);
-      return;
+if (process.argv.length > 2) {
+  request(`${API_URL}/films/${process.argv[2]}/`, (err, _, body) => {
+    if (err) {
+      console.log(err);
     }
+    const charactersURL = JSON.parse(body).characters;
+    const charactersName = charactersURL.map(
+      url => new Promise((resolve, reject) => {
+        request(url, (promiseErr, __, charactersReqBody) => {
+          if (promiseErr) {
+            reject(promiseErr);
+          }
+          resolve(JSON.parse(charactersReqBody).name);
+        });
+      }));
 
-    const filmData = JSON.parse(filmBody);
-    const characters = filmData.characters;
-
-    // Fetch and display character names
-    characters.forEach(characterUrl => {
-      request(characterUrl, (characterError, characterResponse, characterBody) => {
-        if (characterError) {
-          console.error('Error:', characterError);
-          return;
-        }
-
-        const characterData = JSON.parse(characterBody);
-        console.log(characterData.name);
-      });
-    });
+    Promise.all(charactersName)
+      .then(names => console.log(names.join('\n')))
+      .catch(allErr => console.log(allErr));
   });
-}
-
-const args = process.argv.slice(2); // Get command-line arguments
-const movieId = args[0];
-
-if (!movieId) {
-  console.error('Usage: node 0-starwars_characters.js <movieId>');
-} else {
-  getMovieCharacters(movieId);
 }
