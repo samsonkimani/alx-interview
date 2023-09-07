@@ -11,13 +11,14 @@ def primes(n):
                 sieve[i] = False
     return prime
 
+
 def isWinner(x, nums):
     """
     Determine the winner of the Prime Game.
     """
     if x is None or nums is None or x == 0 or not nums:
         return None
-    
+
     Maria = Ben = 0
     for limit in nums:
         prime_count = len(primes(limit))
@@ -25,10 +26,9 @@ def isWinner(x, nums):
             Ben += 1
         else:
             Maria += 1
-    
+
     if Maria > Ben:
         return 'Maria'
     elif Ben > Maria:
         return 'Ben'
     return None
-
