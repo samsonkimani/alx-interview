@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 
+"""game module """
+
+
 def primes(n):
     """Return a list of prime numbers between 1 and n inclusive."""
     prime = []
